@@ -12,6 +12,9 @@ module ISPFinder
     class Error < StandardError; end
 
     API_BASE_URL = 'https://api.verizon.com'
+    API_KEY_URL = 'https://www.verizon.com/5g/home/'
+    API_TOKEN_URL = 'https://www.verizon.com/inhome/generatetoken'
+    VISIT_IDS_URL = 'https://www.verizon.com/inhome/generatevisitid'
 
     attr_reader :city, :state, :street, :zip
 
@@ -27,7 +30,8 @@ module ISPFinder
       puts qualification_data.dig('meta', 'timestamp')
       puts "  Qualified? #{qualification_data.dig('data', 'qualified')}"
       fios_data = qualification_data.dig('data', 'services')
-                                    .find { |service| service['servicename'] == 'FiOSData' }['qualified']
+                                    .find { |service| service['servicename'] == 'FiOSData' }
+                                    .dig('qualified')
       puts "  FiOS? #{fios_data}"
       puts "  FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}"
       puts "  FiOS self install? #{qualification_data.dig('data', 'fiosSelfInstall')}"
@@ -38,13 +42,35 @@ module ISPFinder
     end
 
     def self.api_key
-      @api_key ||= Nokogiri::HTML(Net::HTTP.get_response(URI('https://www.verizon.com/5g/home/')).body)
-                     .search('#locusApiKey').first[:value]
-
+      @api_key ||= home_page.search('#locusApiKey').first[:value]
     end
 
     def self.api_token
-      @api_token ||= JSON.parse(Net::HTTP.get_response(URI("https://www.verizon.com/inhome/generatetoken?timestamp=#{Time.now.to_i * 1000}")).body)['access_token']
+      @api_token ||= JSON.parse(
+        Net::HTTP.get_response(URI("#{API_TOKEN_URL}?timestamp=#{Time.now.to_i * 1000}")).body)
+          .dig('access_token')
+    end
+
+    def self.home_page
+      @home_page ||= Nokogiri::HTML(Net::HTTP.get_response(URI(API_KEY_URL)).body)
+
+    end
+
+    def self.response_with_auth(uri)
+      req = Net::HTTP::Get.new(uri)
+      req['apikey'] = api_key
+      req['Accept'] = 'application/json'
+      req['Authorization'] = "Bearer #{api_token}"
+      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.request(req)
+      end
+      return res if res.is_a?(Net::HTTPSuccess)
+
+      raise(Error, "#{res.class} #{res.body}")
+    end
+
+    def self.visit_ids_data
+      @visit_ids_data ||= JSON.parse(response_with_auth(URI(VISIT_IDS_URL)).body)
     end
 
     private
@@ -85,13 +111,9 @@ module ISPFinder
       req['apikey'] = api_key
       req['Accept'] = 'application/json'
       req['Authorization'] = "Bearer #{self.class.api_token}"
+      req['Cookie'] = "visitor_id=#{self.class.visit_ids_data['visitor_id']}; " \
+                      "visit_id=#{self.class.visit_ids_data['visit_id']};"
 
-      # TODO: Figure out how to generate or retrieve visitor_id and visit_id
-      # NESwyWuaJAA6zXyrok27STgroEw3V9yb9VAsBIm0ffk88FoQYefVt5LPHj871iuKlTV
-      # NESwyWuaJAA6zXyrok27STgroEw3V9yb9VAsBIm0ffk88%2FoQYefVt5LPHj871iuKlTV
-      # NES36tjUW03cBj4l50aksYRDw4Kq86%2B5fZCNtAOYfZXa8UukRX%2BKfbQ7kqTj5QTPdel
-      # req['Cookie'] = "visitor_id=NES#{SecureRandom.alphanumeric(64)}; visit_id=#{SecureRandom.alphanumeric(26).downcase}; "
-      req['Cookie'] = 'visitor_id=NES36tjUW03cBj4l50aksYRDw4Kq86%2B5fZCNtAOYfZXa8UukRX%2BKfbQ7kqTj5QTPdel; visit_id=2u4mkn2grrdglb03tapihmueb6; '
       res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
         http.request(req)
       end
@@ -111,7 +133,3 @@ module ISPFinder
     end
   end
 end
-
-
-ISPFinder::Verizon.new(street: '16 hemlock hollow rd', city: 'ARMONK', state: 'NY', zip: '10504').print_fios_data
-ISPFinder::Verizon.new(street: '240 Spring St', city: 'South Salem', state: 'NY', zip: '10590').print_fios_data
