@@ -15,3 +15,5 @@ group :test do
 end
 
 gem "async", "~> 1.30"
+
+gem "rainbow", "~> 3.0"

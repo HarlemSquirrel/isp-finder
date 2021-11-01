@@ -145,6 +145,10 @@ module ISPFinder
       ).body
     end
 
+    def fiber?
+      availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber').to_f.positive?
+    end
+
     def print_fiber_availability
       puts "  Frontier serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
            "  Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
@@ -160,7 +164,8 @@ module ISPFinder
       [
         "  Frontier serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
         "   Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
-        "   Fiber: #{availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber')}",
+        Rainbow("   Fiber: #{availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber')}")
+          .send(fiber? ? :yellow : :red),
         availability_data.dig('data', 'runServiceability', 'products')
                          .map { |prod| "    $#{prod.dig('pricing', 'amount')} #{prod['name']} " \
                                        "#{prod.dig('attributes', 'downloadSpeed')}M down / " \

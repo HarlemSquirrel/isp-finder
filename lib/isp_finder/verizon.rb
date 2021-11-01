@@ -18,6 +18,16 @@ module ISPFinder
       @zip = zip
     end
 
+    def fios_qualified?
+      qualification_data.dig('data', 'services')
+                        .find { |service| service['servicename'] == 'FiOSData' }
+                        .dig('qualified') == 'Y'
+    end
+
+    def fios_ready?
+      qualification_data.dig('data', 'fiosReady') == 'Y'
+    end
+
     def printable_fios_data
       fios_data = qualification_data.dig('data', 'services')
                                     .find { |service| service['servicename'] == 'FiOSData' }
@@ -27,8 +37,9 @@ module ISPFinder
         "  Verizon",
         # qualification_data.dig('meta', 'timestamp'),
         "   Qualified? #{qualification_data.dig('data', 'qualified')}",
-        "   FiOS? #{fios_data}",
-        "   FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}",
+        Rainbow("   FiOS? #{fios_data}").send(fios_qualified? ? :green : :red),
+        Rainbow("   FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}")
+          .send(fios_ready? ? :green : :red),
         "   FiOS self install? #{qualification_data.dig('data', 'fiosSelfInstall')}"
       ]
     end

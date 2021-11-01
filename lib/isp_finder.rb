@@ -6,6 +6,7 @@ require 'net/http'
 require 'securerandom'
 
 require 'nokogiri'
+require 'rainbow'
 
 require_relative 'isp_finder/frontier'
 require_relative 'isp_finder/verizon'
