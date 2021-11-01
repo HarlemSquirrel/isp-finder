@@ -13,3 +13,5 @@ group :test do
   gem 'vcr'
   gem 'webmock'
 end
+
+gem "async", "~> 1.30"

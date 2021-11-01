@@ -4,9 +4,19 @@ require_relative '../lib/isp_finder.rb'
 
 require 'yaml'
 
-YAML.safe_load(File.read('addresses.yml'), symbolize_names: true).each do |address|
-  #ISPFinder::Verizon.new(**address).print_fios_data
-  ISPFinder::Frontier.new(**address).print_fiber_availability
-rescue StandardError => e
-  puts "Lookup failed with #{e}"
+require 'async'
+
+puts "Loading keys..."
+ISPFinder::Finder.init_keys
+
+puts "Getting availability of services for addresses in addresses.yml...\n\n"
+
+Async do |task|
+  YAML.safe_load(File.read('addresses.yml'), symbolize_names: true).each do |address|
+    task.async do |subtask|
+      ISPFinder::Finder.new(**address).print_findings
+    rescue StandardError => e
+      puts "\n!! Lookup failed for #{address} with #{e}"
+    end
+  end
 end
