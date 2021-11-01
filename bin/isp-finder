@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/isp_finder.rb'
+
+require 'yaml'
+
+YAML.safe_load(File.read('addresses.yml'), symbolize_names: true).each do |address|
+  ISPFinder::Verizon.new(**address).print_fios_data
+end

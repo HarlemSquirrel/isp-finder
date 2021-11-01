@@ -1,0 +1,9 @@
+- street: 1 Times Square
+  city: New York
+  state: NY
+  zip: 10036
+
+- street: 1600 Pennsylvania Ave NW
+  city: Washington
+  state: DC
+  zip: 20500
