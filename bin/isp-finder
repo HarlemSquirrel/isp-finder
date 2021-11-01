@@ -5,5 +5,8 @@ require_relative '../lib/isp_finder.rb'
 require 'yaml'
 
 YAML.safe_load(File.read('addresses.yml'), symbolize_names: true).each do |address|
-  ISPFinder::Verizon.new(**address).print_fios_data
+  #ISPFinder::Verizon.new(**address).print_fios_data
+  ISPFinder::Frontier.new(**address).print_fiber_availability
+rescue StandardError => e
+  puts "Lookup failed with #{e}"
 end
