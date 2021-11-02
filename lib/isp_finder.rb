@@ -20,7 +20,7 @@ module ISPFinder
 
     def self.init_keys
       Frontier.init_keys
-      # Verizon.init_keys
+      Verizon.init_keys
     end
 
     def initialize(street:, city:, state:, zip:)
