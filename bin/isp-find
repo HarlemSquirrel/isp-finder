@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/isp_finder.rb'
+
+puts "Loading keys..."
+
+ISPFinder::Finder.init_keys
+
+finder = ISPFinder::Finder.new(street: ARGV[0], city: ARGV[1], state: ARGV[2], zip: ARGV[3])
+finder.print_findings

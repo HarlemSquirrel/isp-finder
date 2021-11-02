@@ -16,7 +16,7 @@ Async do |task|
     task.async do |subtask|
       ISPFinder::Finder.new(**address).print_findings
     rescue StandardError => e
-      puts "\n!! Lookup failed for #{address} with #{e}"
+      puts "\n!! Lookup failed for #{address} with #{e.class} #{e}"
     end
   end
 end
