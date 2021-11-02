@@ -14,6 +14,7 @@ require_relative 'isp_finder/verizon'
 module ISPFinder
   class Finder
     class Error < StandardError; end
+    class EmptyParamsError < StandardError; end
 
     attr_reader :city, :state, :street, :zip
 
@@ -27,6 +28,7 @@ module ISPFinder
       @state = state
       @street = street
       @zip = zip
+      raise(EmptyParamsError, "Missing param(s) in #{address_params}") if address_params.values.any?(&:nil?)
     end
 
     def print_findings
