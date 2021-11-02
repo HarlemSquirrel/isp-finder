@@ -1,6 +1,4 @@
 module ISPFinder
-
-
   class Verizon
     class Error < StandardError; end
 

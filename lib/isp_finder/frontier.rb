@@ -167,6 +167,7 @@ module ISPFinder
         Rainbow("   Fiber: #{availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber')}")
           .send(fiber? ? :yellow : :red),
         availability_data.dig('data', 'runServiceability', 'products')
+                         .to_a
                          .map { |prod| "    $#{prod.dig('pricing', 'amount')} #{prod['name']} " \
                                        "#{prod.dig('attributes', 'downloadSpeed')}M down / " \
                                        "#{prod.dig('attributes', 'uploadSpeed')}M up " \
