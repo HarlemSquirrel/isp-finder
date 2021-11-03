@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'cgi'
 require 'json'
 require 'logger'
 require 'net/http'
@@ -9,6 +10,7 @@ require 'nokogiri'
 require 'rainbow'
 
 require_relative 'isp_finder/frontier'
+require_relative 'isp_finder/optimum'
 require_relative 'isp_finder/verizon'
 
 module ISPFinder
@@ -34,6 +36,7 @@ module ISPFinder
     def print_findings
       puts "\n#{street} #{city}, #{state}, #{zip}",
            *Frontier.new(**address_params).printable_fiber_availability,
+           *Optimum.new(**address_params).printable_data,
            *Verizon.new(**address_params).printable_fios_data
     end
 
