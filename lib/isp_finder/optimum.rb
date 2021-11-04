@@ -1,5 +1,9 @@
+require_relative 'isp_base'
+
 module ISPFinder
   class Optimum
+    include ISPBase
+
     class Error < StandardError; end
 
     URLS = {
@@ -21,27 +25,13 @@ module ISPFinder
       @cookies = []
     end
 
-    def fios_qualified?
-      qualification_data.dig('data', 'services')
-                        .find { |service| service['servicename'] == 'FiOSData' }
-                        .dig('qualified') == 'Y'
-    end
-
-    def fios_ready?
-      qualification_data.dig('data', 'fiosReady') == 'Y'
-    end
-
     def printable_data
-      [
-        "  Optimum",
-        *bundles_data['internetOnlyOffers'].to_a.map do |offer|
-          "   #{offer['name']} $#{offer['price']}#{offer['priceTerm']} #{offer['internetSpeed']} Mbps Fiber? #{Rainbow(offer['fiber'] ? 'Y' : 'N').send(offer['fiber'] ? :green : :red)}"
+      presenter.printable(
+        bundles_data['internetOnlyOffers'].to_a.map do |offer|
+          "#{offer['name']} $#{offer['price']}#{offer['priceTerm']} #{offer['internetSpeed']}"
         end
-      ]
+      )
     end
-
-
-
 
     def bundles_data
       # response(URI(URLS[:storefront]))
@@ -55,7 +45,10 @@ module ISPFinder
         sleep(0.5)
       end
       @@lock = true
-      @bundles_data ||= localize_response && JSON.parse(response(URI(URLS[:bundles])).body)
+      @bundles_data ||= Storage.fetch(
+        "#{storage_key_base}.bundles_data",
+        Proc.new { localize_response && JSON.parse(response(URI(URLS[:bundles])).body) }
+      )
       @@lock = false
       @bundles_data
     end
@@ -63,6 +56,10 @@ module ISPFinder
     private
 
     attr_reader :cookies
+
+    def fiber_confidence
+      bundles_data['internetOnlyOffers'].to_a.any? { |d| d.dig('fiber') } ? 1 : 0
+    end
 
     def localize_response
       @localize_response ||= JSON.parse(post_response(URI(URLS[:localize]), {

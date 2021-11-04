@@ -110,4 +110,6 @@ VCR.configure do |config|
   config.hook_into :webmock
 end
 
+ISP_FINDER_ENV = 'test'
+
 require_relative '../lib/isp_finder'

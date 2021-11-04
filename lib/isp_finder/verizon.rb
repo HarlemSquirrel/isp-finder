@@ -1,5 +1,9 @@
+require_relative 'storage'
+
 module ISPFinder
   class Verizon
+    include ISPBase
+
     class Error < StandardError; end
 
     API_BASE_URL = 'https://api.verizon.com'
@@ -17,9 +21,7 @@ module ISPFinder
     end
 
     def fios_qualified?
-      qualification_data.dig('data', 'services')
-                        .find { |service| service['servicename'] == 'FiOSData' }
-                        .dig('qualified') == 'Y'
+      fios_data.dig('qualified') == 'Y'
     end
 
     def fios_ready?
@@ -27,29 +29,33 @@ module ISPFinder
     end
 
     def printable_fios_data
-      fios_data = qualification_data.dig('data', 'services')
-                                    .find { |service| service['servicename'] == 'FiOSData' }
-                                    .dig('qualified')
-
-      [
-        "  Verizon",
+      presenter.printable [
         # qualification_data.dig('meta', 'timestamp'),
-        "   Qualified? #{qualification_data.dig('data', 'qualified')}",
-        Rainbow("   FiOS? #{fios_data}").send(fios_qualified? ? :green : :red),
-        Rainbow("   FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}")
-          .send(fios_ready? ? :green : :red),
-        "   FiOS self install? #{qualification_data.dig('data', 'fiosSelfInstall')}"
+        "Qualified? #{qualification_data.dig('data', 'qualified')}",
+        "FiOS? #{fios_data.dig('qualified')}",
+        "FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}",
+        "FiOS self install? #{qualification_data.dig('data', 'fiosSelfInstall')}"
       ]
     end
 
+    def fios_data
+      qualification_data.dig('data', 'services')
+                        .find { |service| service['servicename'] == 'FiOSData' }
+
+    end
+
     def qualification_data
-      @qualification_data ||= JSON.parse response(qualification_uri).body
+      @qualification_data ||= Storage.fetch(
+        "#{storage_key_base}.qualification_data",
+        Proc.new { JSON.parse(response(qualification_uri).body) }
+      )
     end
 
     ##
     # Get the tokens and keys we need for all checks
     #
     def self.init_keys
+      # TODO: Store these for an hour or more in pstore
       api_key
       api_token
       home_page
@@ -90,6 +96,15 @@ module ISPFinder
 
     def api_key
       self.class.api_key
+    end
+
+    def fiber_confidence
+      (fios_qualified? ? 0.5 : 0) + (fios_ready? ? 0.5 : 0)
+    end
+
+    def presenter
+      @presenter ||= Presenter.new(brand: self.class.name.split('::').last,
+                                   fiber_confidence: fiber_confidence)
     end
 
     def logger

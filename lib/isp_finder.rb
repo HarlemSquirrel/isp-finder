@@ -9,6 +9,8 @@ require 'securerandom'
 require 'nokogiri'
 require 'rainbow'
 
+require_relative 'isp_finder/presenter'
+
 require_relative 'isp_finder/frontier'
 require_relative 'isp_finder/optimum'
 require_relative 'isp_finder/verizon'
@@ -21,7 +23,6 @@ module ISPFinder
     attr_reader :city, :state, :street, :zip
 
     def self.init_keys
-      Frontier.init_keys
       Verizon.init_keys
     end
 

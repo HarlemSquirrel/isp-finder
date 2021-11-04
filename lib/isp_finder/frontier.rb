@@ -1,5 +1,9 @@
+require_relative 'isp_base'
+
 module ISPFinder
   class Frontier
+    include ISPBase
+
     class Error < StandardError; end
 
     GRAPHQL_URL = 'https://fr-direct-bff.integration-services.redventures.io/graphql'
@@ -130,19 +134,24 @@ module ISPFinder
     end
 
     def availability_data
-      @availability_data ||= JSON.parse post_response(
-        URI(GRAPHQL_URL),
-        operationName: "RUN_SERVICEABILITY_MUTATION",
-        query: GRAPHQL_AVAIL_QUERY,
-        variables: {
-          address1: street,
-          city: city,
-          state: state,
-          zip: zip,
-          # TODO: Figure out how to retrieve/generate this order ID.
-          orderId: "08d99cec-08dc-18b7-371a-36c139e48826"
-        }
-      ).body
+      @availability_data ||= Storage.fetch(
+        "#{storage_key_base}.availability_data",
+        Proc.new do
+          JSON.parse post_response(
+            URI(GRAPHQL_URL),
+            operationName: "RUN_SERVICEABILITY_MUTATION",
+            query: GRAPHQL_AVAIL_QUERY,
+            variables: {
+              address1: street,
+              city: city,
+              state: state,
+              zip: zip,
+              # TODO: Figure out how to retrieve/generate this order ID.
+              orderId: "08d99cec-08dc-18b7-371a-36c139e48826"
+            }
+          ).body
+        end
+      )
     end
 
     def fiber?
@@ -174,17 +183,6 @@ module ISPFinder
                                        "Fiber? #{prod.dig('isFib') || 'no'}" }
       ]
     end
-
-    ##
-    # Get the tokens and keys we need for all checks
-    #
-    def self.init_keys
-      # session_id
-    end
-
-    # def self.session_id
-    #   JSON.parse(Net::HTTP.get('https://frontier.com/api/session').body)['sessionId']
-    # end
 
     private
 

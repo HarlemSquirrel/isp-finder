@@ -6,5 +6,7 @@ puts "Loading keys..."
 
 ISPFinder::Finder.init_keys
 
+puts "Querying ISPs..."
+
 finder = ISPFinder::Finder.new(street: ARGV[0], city: ARGV[1], state: ARGV[2], zip: ARGV[3])
 finder.print_findings
