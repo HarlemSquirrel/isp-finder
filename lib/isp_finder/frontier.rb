@@ -170,11 +170,10 @@ module ISPFinder
     end
 
     def printable_fiber_availability
-      [
-        "  Frontier serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
-        "   Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
-        Rainbow("   Fiber: #{availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber')}")
-          .send(fiber? ? :yellow : :red),
+      presenter.printable [
+        "Serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
+        "Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
+        "Fiber prediction: #{fiber_confidence}",
         availability_data.dig('data', 'runServiceability', 'products')
                          .to_a
                          .map { |prod| "    $#{prod.dig('pricing', 'amount')} #{prod['name']} " \
@@ -182,6 +181,10 @@ module ISPFinder
                                        "#{prod.dig('attributes', 'uploadSpeed')}M up " \
                                        "Fiber? #{prod.dig('isFib') || 'no'}" }
       ]
+    end
+
+    def fiber_confidence
+      availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber') || 0
     end
 
     private
