@@ -29,6 +29,8 @@ module ISPFinder
     end
 
     def printable_fios_data
+      return presenter.printable(["Address not found"]) if address_from_typeahead.nil?
+
       presenter.printable [
         # qualification_data.dig('meta', 'timestamp'),
         "Qualified? #{qualification_data.dig('data', 'qualified')}",
@@ -99,6 +101,8 @@ module ISPFinder
     end
 
     def fiber_confidence
+      return 0 if address_from_typeahead.nil?
+
       (fios_qualified? ? 0.5 : 0) + (fios_ready? ? 0.5 : 0)
     end
 
@@ -127,11 +131,16 @@ module ISPFinder
     # Right now we assume the first result is what we want.
     #
     def address_from_typeahead
-      @address_from_typeahead ||= JSON.parse(response(typeahead_uri).body).dig('addresses', 0)
+      @address_from_typeahead ||= Storage.fetch(
+        "#{storage_key_base}.address_from_typeahead",
+        Proc.new { JSON.parse(response(typeahead_uri).body).dig('addresses', 0) }
+      )
     end
 
     def address_id
       address_from_typeahead['ntasAddrID'] || address_from_typeahead['locusID']
+    rescue NoMethodError
+      require 'pry'; binding.pry
     end
 
     def response(uri)
