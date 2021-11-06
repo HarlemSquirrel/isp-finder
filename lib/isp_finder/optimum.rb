@@ -1,3 +1,4 @@
+require_relative 'config'
 require_relative 'isp_base'
 
 module ISPFinder
@@ -74,7 +75,7 @@ module ISPFinder
       	},
         # recaptchaPassed: true
         # "experienceCloudVisitorId": "",
-        # "recaptchaResponse": "03AGdBq243AFpu--_XX2EJDwOnnA8k6r7_-MujuP2at0vR7h_ZkTBrfeMH0XpDv8PhFLMX9sreNB0kS8K-CWHfZjnwPJNeF2q_-e58uhq0pbNFDy0zRmipQ-ggBGhzlPzu-6_6ZmF4iX5NjVfdDq7IKLTPU1xtLFKyINCrdmSakhCoo7raomzkLOiGgGD-rYhn6G9ANPZGFlwARSt70c2VA7CRguX-omw_cU9J6CvO5KfcTe3LL3BcALyk7Yhvl3nmVloArA8UEBz2ntcRg0TBUIMYjPJ4Va_L4jvrRnkrBlQrISKC_JhAD0itHhatCiXxEKkNnWU6nabpR-bsGMKjSIBWnQ3cG58Qx5HOw6H6LGtPGitqa27mAzFsc78fmn2PGgs4XNQ-Xwj9QCsT3mJOs8zicqdTHPsffL4i0-SF7TzWooA5qD2hn5vApubIc6_Re8aisGEEnVJzusANFJQyOcSTqMru4UQi1g"
+        # "recaptchaResponse": "..."
       }).body)
     end
 
@@ -117,7 +118,7 @@ module ISPFinder
       # TODO: We should be able to get a fresh sid by visiting the storefront
       # but right now it seems to be behind a Google recaptcha so we have to visit the
       # storefront URL in a browswer, fill in an address, and then we can get get a new sid.
-      "connect.sid=s:9UEVcPmE5UKbwWfTmeRllNz-62YnatEa.OGuasJzRQ2uDtuhdauzLAQzR2sh9i9j5VuAxX0gJgo0"
+      "connect.sid=#{Config.optimum['connect_sid']}"
     end
 
     def cookies_from(response)

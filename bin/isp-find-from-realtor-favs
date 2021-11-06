@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/isp_finder.rb'
+require_relative '../lib/isp_finder/realtor_dot_com.rb'
+
+require 'async'
+
+puts "Loading keys..."
+ISPFinder::Finder.init_keys
+
+puts "Getting availability of services for addresses in addresses.yml...\n\n"
+
+property_count = 0
+
+Async do |task|
+  ISPFinder::RealtorDotCom.new.saved_properties.each do |property|
+    task.async do |subtask|
+      address = {
+        street: property.dig('home', 'location', 'address', 'line'),
+        city: property.dig('home', 'location', 'address', 'city'),
+        state: property.dig('home', 'location', 'address', 'state_code'),
+        zip: property.dig('home', 'location', 'address', 'postal_code'),
+      }
+      ISPFinder::Finder.new(**address).print_findings
+      property_count += 1
+    rescue StandardError => e
+      puts "\n!! Lookup failed for #{address}"
+      raise(e)
+    end
+  end
+
+end
+
+puts "\nDone!"
+puts "Found #{property_count} properties from Realtor.com"

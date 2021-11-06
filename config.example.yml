@@ -1,0 +1,12 @@
+##
+# Copy to config.yml and replace the keys with real ones from your browser
+#
+
+optimum:
+  connect_sid: s:...
+
+realtor_dot_com:
+  headers:
+    authorization: 'Bearer ...'
+    cookie: 'split=...'
+    remember_me: 'em=...'
