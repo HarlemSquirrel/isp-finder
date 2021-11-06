@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+##
+# Ex.
+# isp-find 1 Times Square, New York, NY 10036
+#
+
 require_relative '../lib/isp_finder.rb'
 
 puts "Loading keys..."
@@ -8,5 +13,8 @@ ISPFinder::Finder.init_keys
 
 puts "Querying ISPs..."
 
-finder = ISPFinder::Finder.new(street: ARGV[0], city: ARGV[1], state: ARGV[2], zip: ARGV[3])
+street, city, state_zip = ARGV.join(' ').strip.split(/,\s+/)
+
+finder = ISPFinder::Finder.new(street: street, city: city, state: state_zip[0..1], zip: state_zip[3..-1])
+
 finder.print_findings
