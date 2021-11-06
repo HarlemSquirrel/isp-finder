@@ -28,6 +28,10 @@ module ISPFinder
       qualification_data.dig('data', 'fiosReady') == 'Y'
     end
 
+    def fios_self_install?
+      qualification_data.dig('data', 'fiosSelfInstall') == 'Y'
+    end
+
     def printable_fios_data
       return presenter.printable(["Address not found"]) if address_from_typeahead.nil?
 
@@ -103,7 +107,7 @@ module ISPFinder
     def fiber_confidence
       return 0 if address_from_typeahead.nil?
 
-      (fios_qualified? ? 0.5 : 0) + (fios_ready? ? 0.5 : 0)
+      (fios_qualified? ? 0.5 : 0) + (fios_ready? ? 0.5 : 0) + (fios_self_install? ? 0.5 : 0)
     end
 
     def presenter

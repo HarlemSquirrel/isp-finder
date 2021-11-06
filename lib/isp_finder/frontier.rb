@@ -174,12 +174,12 @@ module ISPFinder
         "Serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
         "Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
         "Fiber prediction: #{fiber_confidence}",
-        availability_data.dig('data', 'runServiceability', 'products')
-                         .to_a
-                         .map { |prod| "    $#{prod.dig('pricing', 'amount')} #{prod['name']} " \
-                                       "#{prod.dig('attributes', 'downloadSpeed')}M down / " \
-                                       "#{prod.dig('attributes', 'uploadSpeed')}M up " \
-                                       "Fiber? #{prod.dig('isFib') || 'no'}" }
+        *availability_data.dig('data', 'runServiceability', 'products')
+                          .to_a
+                          .map { |prod| "$#{prod.dig('pricing', 'amount')} #{prod['name']} " \
+                                        "#{prod.dig('attributes', 'downloadSpeed')}M down / " \
+                                        "#{prod.dig('attributes', 'uploadSpeed')}M up " \
+                                        "Fiber? #{prod.dig('isFib') || 'no'}" }
       ]
     end
 
