@@ -1,3 +1,7 @@
+##
+# Copy to addresses.yml and fill in as many addresses as you wany
+#
+
 - street: 1 Times Square
   city: New York
   state: NY
