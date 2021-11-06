@@ -8,7 +8,7 @@ require 'async'
 puts "Loading keys..."
 ISPFinder::Finder.init_keys
 
-puts "Getting availability of services for addresses in addresses.yml...\n\n"
+puts "Getting availability of services for Realtor.com favorites...\n\n"
 
 property_count = 0
 
@@ -21,7 +21,9 @@ Async do |task|
         state: property.dig('home', 'location', 'address', 'state_code'),
         zip: property.dig('home', 'location', 'address', 'postal_code'),
       }
-      ISPFinder::Finder.new(**address).print_findings
+      subtask.with_timeout(60) do
+        ISPFinder::Finder.new(**address).print_findings
+      end
       property_count += 1
     rescue StandardError => e
       puts "\n!! Lookup failed for #{address}"
@@ -32,4 +34,4 @@ Async do |task|
 end
 
 puts "\nDone!"
-puts "Found #{property_count} properties from Realtor.com"
+puts "Loaded results for #{property_count} properties from Realtor.com favorites"

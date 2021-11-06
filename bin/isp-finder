@@ -14,7 +14,9 @@ puts "Getting availability of services for addresses in addresses.yml...\n\n"
 Async do |task|
   YAML.safe_load(File.read('addresses.yml'), symbolize_names: true).each do |address|
     task.async do |subtask|
-      ISPFinder::Finder.new(**address).print_findings
+      subtask.with_timeout(30) do
+        ISPFinder::Finder.new(**address).print_findings
+      end
     rescue StandardError => e
       puts "\n!! Lookup failed for #{address}"
       raise(e)

@@ -35,7 +35,7 @@ module ISPFinder
     end
 
     def print_findings
-      puts "\n#{street} #{city}, #{state}, #{zip}",
+      puts "\n#{street}, #{city}, #{state} #{zip}",
            *Frontier.new(**address_params).printable_fiber_availability,
            *Optimum.new(**address_params).printable_data,
            *Verizon.new(**address_params).printable_fios_data
