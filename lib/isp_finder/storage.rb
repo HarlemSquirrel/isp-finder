@@ -8,9 +8,13 @@ module ISPFinder
       def fetch(key, proc)
         return proc.call if testing?
 
-        store.transaction do
-          store[key] ||= proc.call
-        end
+        value = store.transaction { store[key] }
+        return value if value
+
+        # Load the resources outside the store transaction so we don't lock while performing
+        # network requests
+        value = proc.call
+        store.transaction { store[key] ||= value }
       end
 
       private
