@@ -4,11 +4,13 @@ module ISPFinder
   class Storage
     class Error < StandardError; end
 
+    FILE_NAME = 'isp_finder.pstore'
+
     class << self
       def fetch(key, proc)
         return proc.call if testing?
 
-        value = store.transaction { store[key] }
+        value = read(key)
         return value if value
 
         # Load the resources outside the store transaction so we don't lock while performing
@@ -19,8 +21,12 @@ module ISPFinder
 
       private
 
+      def read(key)
+        PStore.new(FILE_NAME, true).tap { |rstore| rstore.transaction(true) { return rstore[key] } }
+      end
+
       def store
-        @store ||= PStore.new('isp_finder.pstore', true)
+        @store ||= PStore.new(FILE_NAME, true)
       end
 
       def testing?

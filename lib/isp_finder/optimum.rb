@@ -26,7 +26,7 @@ module ISPFinder
       @cookies = []
     end
 
-    def printable_data
+    def printable
       presenter.printable(
         bundles_data['internetOnlyOffers'].to_a.map do |offer|
           "#{offer['name']} $#{offer['price']}#{offer['priceTerm']} #{offer['internetSpeed']}"
@@ -54,13 +54,13 @@ module ISPFinder
       @bundles_data
     end
 
-    private
-
-    attr_reader :cookies
-
     def fiber_confidence
       bundles_data['internetOnlyOffers'].to_a.any? { |d| d.dig('fiber') } ? 1 : 0
     end
+
+    private
+
+    attr_reader :cookies
 
     def localize_response
       @localize_response ||= JSON.parse(post_response(URI(URLS[:localize]), {

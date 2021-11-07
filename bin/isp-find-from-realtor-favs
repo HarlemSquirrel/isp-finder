@@ -4,34 +4,54 @@ require_relative '../lib/isp_finder.rb'
 require_relative '../lib/isp_finder/realtor_dot_com.rb'
 
 require 'async'
+require 'async/semaphore'
+
+start_time = Time.now
+fiber_confidence_counts = { high: 0, low: 0, none: 0 }
+property_count = 0
 
 puts "Loading keys..."
 ISPFinder::Finder.init_keys
 
 puts "Getting availability of services for Realtor.com favorites...\n\n"
 
-property_count = 0
-
-Async do |task|
+Sync do
   ISPFinder::RealtorDotCom.new.saved_properties.each do |property|
-    task.async do |subtask|
-      address = {
+    # Limit concurrency to 32 concurrent so we don't overwhelm IO and result in timeouts
+    semaphore = Async::Semaphore.new(8)
+
+    semaphore.async do |subtask|
+      finder = ISPFinder::Finder.new(
         street: property.dig('home', 'location', 'address', 'line'),
         city: property.dig('home', 'location', 'address', 'city'),
         state: property.dig('home', 'location', 'address', 'state_code'),
         zip: property.dig('home', 'location', 'address', 'postal_code'),
-      }
+      )
+
       subtask.with_timeout(60) do
-        ISPFinder::Finder.new(**address).print_findings
+        finder.print_findings
       end
+
       property_count += 1
+
+      if finder.best_fiber_confidence >= 1
+        fiber_confidence_counts[:high] += 1
+      elsif finder.best_fiber_confidence > 0
+        fiber_confidence_counts[:low] += 1
+      else
+        fiber_confidence_counts[:none] += 1
+      end
     rescue StandardError => e
       puts "\n!! Lookup failed for #{address}"
       raise(e)
     end
   end
-
 end
 
+end_time = Time.now
+duration_min = ((end_time - start_time).to_f / 60).floor
+duration_sec = ((end_time - start_time).to_f % 60).round(1)
+
 puts "\nDone!"
-puts "Loaded results for #{property_count} properties from Realtor.com favorites"
+puts "Loaded results for #{property_count} properties from Realtor.com favorites in #{duration_min}m #{duration_sec}s."
+puts "Fiber confidence in properties: " + fiber_confidence_counts.map { |k,v| "#{k}: #{v}" }.join(', ')

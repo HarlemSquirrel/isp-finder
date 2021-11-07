@@ -14,7 +14,7 @@ module ISPFinder
 
     def saved_resources
       JSON.parse response(URI('https://www.realtor.com/api/v1/saved_resources' \
-        '?page=1&page_limit=100&exclude_deleted=true&sort_by=created_date&sort_order=desc')).body
+        '?page=1&page_limit=200&exclude_deleted=true&sort_by=created_date&sort_order=desc')).body
     end
 
     private

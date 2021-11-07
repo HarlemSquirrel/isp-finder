@@ -34,17 +34,33 @@ module ISPFinder
       raise(EmptyParamsError, "Missing param(s) in #{address_params}") if address_params.values.any?(&:nil?)
     end
 
+    def best_fiber_confidence
+      @best_fiber_confidence ||= [frontier, optimum, verizon].map(&:fiber_confidence).max
+    end
+
     def print_findings
       puts "\n#{street}, #{city}, #{state} #{zip}",
-           *Frontier.new(**address_params).printable_fiber_availability,
-           *Optimum.new(**address_params).printable_data,
-           *Verizon.new(**address_params).printable_fios_data
+           *frontier.printable,
+           *optimum.printable,
+           *verizon.printable
     end
 
     private
 
     def address_params
       { street: street, city: city, state: state, zip: zip }
+    end
+
+    def frontier
+      @frontier ||= Frontier.new(**address_params)
+    end
+
+    def optimum
+      @optimum ||= Optimum.new(**address_params)
+    end
+
+    def verizon
+      @verizon ||= Verizon.new(**address_params)
     end
   end
 end

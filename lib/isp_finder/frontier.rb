@@ -169,7 +169,7 @@ module ISPFinder
                            "Fiber? #{prod.dig('isFib') || 'no'}" }
     end
 
-    def printable_fiber_availability
+    def printable
       presenter.printable [
         "Serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
         "Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",

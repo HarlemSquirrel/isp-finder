@@ -32,7 +32,7 @@ module ISPFinder
       qualification_data.dig('data', 'fiosSelfInstall') == 'Y'
     end
 
-    def printable_fios_data
+    def printable
       return presenter.printable(["Address not found"]) if address_from_typeahead.nil?
 
       presenter.printable [
@@ -50,11 +50,24 @@ module ISPFinder
 
     end
 
+    def qualified?
+      qualification_data.dig('data', 'qualified') == 'Y'
+    end
+
     def qualification_data
       @qualification_data ||= Storage.fetch(
         "#{storage_key_base}.qualification_data",
         Proc.new { JSON.parse(response(qualification_uri).body) }
       )
+    end
+
+    def fiber_confidence
+      return 0 if address_from_typeahead.nil?
+
+      (qualified? ? 0.5 : 0) +
+        (fios_qualified? ? 0.5 : 0) +
+        (fios_ready? ? 0.5 : 0) +
+        (fios_self_install? ? 0.5 : 0)
     end
 
     ##
@@ -104,11 +117,6 @@ module ISPFinder
       self.class.api_key
     end
 
-    def fiber_confidence
-      return 0 if address_from_typeahead.nil?
-
-      (fios_qualified? ? 0.5 : 0) + (fios_ready? ? 0.5 : 0) + (fios_self_install? ? 0.5 : 0)
-    end
 
     def presenter
       @presenter ||= Presenter.new(brand: self.class.name.split('::').last,
@@ -143,8 +151,6 @@ module ISPFinder
 
     def address_id
       address_from_typeahead['ntasAddrID'] || address_from_typeahead['locusID']
-    rescue NoMethodError
-      require 'pry'; binding.pry
     end
 
     def response(uri)
