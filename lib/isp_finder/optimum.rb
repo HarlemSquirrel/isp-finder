@@ -27,6 +27,8 @@ module ISPFinder
     end
 
     def printable
+      return presenter.printable(["Error"]) if bundles_data.nil? && @buyflow_error
+
       presenter.printable(
         bundles_data['internetOnlyOffers'].to_a.map do |offer|
           "#{offer['name']} $#{offer['price']}#{offer['priceTerm']} #{offer['internetSpeed']}"
@@ -40,21 +42,32 @@ module ISPFinder
 
       # Since we have to share a single sid and make multiple requests we need to lock
       # when doing parallel requests with async
+      return @bundles_data if @bundles_data
+
       start = Time.now
       while @@lock && start < Time.now + 30
         # puts "#{self.class} waiting..."
         sleep(0.5)
       end
       @@lock = true
-      @bundles_data ||= Storage.fetch(
+      data = Storage.fetch(
         "#{storage_key_base}.bundles_data",
         Proc.new { localize_response && JSON.parse(response(URI(URLS[:bundles])).body) }
       )
       @@lock = false
-      @bundles_data
+
+      if data == { "redirectUrl" => "/Buyflow/Error" }
+        Storage.delete("#{storage_key_base}.bundles_data")
+        @buyflow_error = true
+        return @bundles_data = nil
+      end
+
+      @bundles_data = data
     end
 
     def fiber_confidence
+      return 0 if @buyflow_error || bundles_data.nil?
+
       bundles_data['internetOnlyOffers'].to_a.any? { |d| d.dig('fiber') } ? 1 : 0
     end
 

@@ -7,6 +7,10 @@ module ISPFinder
     FILE_NAME = 'isp_finder.pstore'
 
     class << self
+      def delete(key)
+        store.transaction { store.delete(key) }
+      end
+
       def fetch(key, proc)
         return proc.call if testing?
 
