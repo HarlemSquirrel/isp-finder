@@ -18,13 +18,14 @@ module ISPFinder
     end
 
     def saved_resources
+      puts "Getting Realtor.com favorites..."
       JSON.parse response(URI('https://www.realtor.com/api/v1/saved_resources' \
         '?page=1&page_limit=200&exclude_deleted=true&sort_by=created_date&sort_order=desc')).body
     end
 
     private
 
-    attr_reader :access_token, :cookies, :refresh_token, :remember_me
+    attr_reader :access_token, :cookies, :remember_me, :token_data
 
     def response(uri)
       req = Net::HTTP::Get.new(uri)
@@ -43,6 +44,14 @@ module ISPFinder
     end
 
     def sign_in!
+      data = Storage.read('realtor_dot_com.signin_data')
+      if data
+        @cookies = data['cookies']
+        @remember_me = data['remember_me']
+        return
+      end
+
+      puts "Signing in to Realtor.com..."
       uri = URI(URLS[:signin])
       req = Net::HTTP::Post.new(uri)
       req['Accept'] = 'application/json'
@@ -62,11 +71,20 @@ module ISPFinder
 
       update_cookies(res)
       @remember_me = res['realtor_cookie'].split('REMEMBER_ME=').last
+      Storage.write('realtor_dot_com.signin_data', { 'cookies' => cookies, 'remember_me' => remember_me })
     end
 
     def token
       return @access_token if @access_token
 
+      data = Storage.read('realtor_dot_com.token_data')
+      if data && Time.now < Time.at(data.fetch('expires_at', 1))
+        @token_data = data
+        return @access_token = data['access_token']
+      end
+
+      # Time to get a new token
+      puts "Getting Realtor.com token..."
       uri = URI(URLS[:auth_token])
       req = Net::HTTP::Post.new(uri)
       req['Accept'] = 'application/json'
@@ -84,7 +102,8 @@ module ISPFinder
       raise(Error, "#{res.class} #{res.body}") unless res.is_a?(Net::HTTPSuccess)
 
       parsed_res = JSON.parse(res.body)
-      @refresh_token = parsed_res['refresh_token']
+      @token_data = parsed_res.merge('expires_at' => Time.now.to_i + parsed_res['expires_in'])
+      Storage.write('realtor_dot_com.token_data', token_data)
       @access_token = parsed_res['access_token']
     end
 

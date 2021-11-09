@@ -14,6 +14,14 @@ module ISPFinder
       def fetch(key, proc)
         new.fetch(key, proc)
       end
+
+      def read(key)
+        new.read(key)
+      end
+
+      def write(key, value)
+        new.write(key, value)
+      end
     end
 
     def delete(key)
@@ -32,11 +40,15 @@ module ISPFinder
       store.transaction { store[key] = value }
     end
 
-    private
-
     def read(key)
       store.transaction(true) { return store[key] }
     end
+
+    def write(key, value)
+      store.transaction { store[key] = value }
+    end
+
+    private
 
     def store
       @store ||= PStore.new(FILE_NAME, true)
