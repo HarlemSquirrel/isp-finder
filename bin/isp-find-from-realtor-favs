@@ -21,12 +21,13 @@ Sync do
     semaphore = Async::Semaphore.new(8)
 
     semaphore.async do |subtask|
-      finder = ISPFinder::Finder.new(
+      address = {
         street: property.dig('home', 'location', 'address', 'line'),
         city: property.dig('home', 'location', 'address', 'city'),
         state: property.dig('home', 'location', 'address', 'state_code'),
         zip: property.dig('home', 'location', 'address', 'postal_code'),
-      )
+      }
+      finder = ISPFinder::Finder.new(**address)
 
       subtask.with_timeout(60) do
         finder.print_findings

@@ -7,6 +7,5 @@ optimum:
 
 realtor_dot_com:
   headers:
-    authorization: 'Bearer ...'
-    cookie: 'split=...'
-    remember_me: 'em=...'
+    username: changeme
+    password: "changeme"
