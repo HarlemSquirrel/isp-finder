@@ -124,15 +124,6 @@ module ISPFinder
       }
     STRING
 
-    attr_reader :street, :city, :state, :zip
-
-    def initialize(street:, city:, state:, zip:)
-      @street = street
-      @city = city
-      @state = state
-      @zip = zip.to_s
-    end
-
     def availability_data
       @availability_data ||= Storage.fetch(
         "#{storage_key_base}.availability_data",
@@ -198,7 +189,14 @@ module ISPFinder
 
       req.body = params.to_json
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      opt = {
+        open_timeout: 3,
+        read_timeout: 5,
+        write_timeout: 5,
+        use_ssl: true
+      }
+
+      res = Net::HTTP.start(uri.hostname, uri.port, **opt) do |http|
         http.request(req)
       end
       return res if res.is_a?(Net::HTTPSuccess)

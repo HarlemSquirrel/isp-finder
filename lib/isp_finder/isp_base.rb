@@ -2,6 +2,15 @@ require_relative 'storage'
 
 module ISPFinder
   module ISPBase
+    attr_reader :city, :state, :street, :zip
+
+    def initialize(street:, city:, state:, zip:)
+      @street = street
+      @city = city
+      @state = state
+      @zip = zip.to_s
+    end
+
     def brand
       self.class.name.split('::').last
     end

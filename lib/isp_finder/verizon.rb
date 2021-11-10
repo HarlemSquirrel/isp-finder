@@ -11,15 +11,6 @@ module ISPFinder
     API_TOKEN_URL = 'https://www.verizon.com/inhome/generatetoken'
     VISIT_IDS_URL = 'https://www.verizon.com/inhome/generatevisitid'
 
-    attr_reader :city, :state, :street, :zip
-
-    def initialize(street:, city:, state:, zip:)
-      @city = city
-      @state = state
-      @street = street
-      @zip = zip
-    end
-
     def fios_qualified?
       fios_data.dig('qualified') == 'Y'
     end

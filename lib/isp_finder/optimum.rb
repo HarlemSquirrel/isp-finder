@@ -13,15 +13,10 @@ module ISPFinder
       storefront: 'https://order.optimum.com/Buyflow/Storefront'
     }
 
-    attr_reader :city, :state, :street, :zip
-
     @@lock = false
 
     def initialize(street:, city:, state:, zip:)
-      @city = city
-      @state = state
-      @street = street
-      @zip = zip
+      super
 
       @cookies = []
     end
@@ -47,7 +42,7 @@ module ISPFinder
       start = Time.now
       while @@lock && start < Time.now + 30
         # puts "#{self.class} waiting..."
-        sleep(0.5)
+        sleep(0.2)
       end
       @@lock = true
       data = Storage.fetch(
@@ -101,7 +96,14 @@ module ISPFinder
 
       req.body = params.to_json
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      opt = {
+        open_timeout: 3,
+        read_timeout: 5,
+        write_timeout: 5,
+        use_ssl: true
+      }
+
+      res = Net::HTTP.start(uri.hostname, uri.port, **opt) do |http|
         http.request(req)
       end
 
@@ -116,7 +118,14 @@ module ISPFinder
       req['Accept'] = 'application/json'
       req['Cookie'] = cookies_string
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      opt = {
+        open_timeout: 3,
+        read_timeout: 5,
+        write_timeout: 5,
+        use_ssl: true
+      }
+
+      res = Net::HTTP.start(uri.hostname, uri.port, **opt) do |http|
         http.request(req)
       end
 
