@@ -1,0 +1,78 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.spectrum.com/bin/spectrum/residential/location.json//10460
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Mozilla/5.0 (X11; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0
+      Host:
+      - www.spectrum.com
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - Apache
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      Content-Type:
+      - application/json
+      Vary:
+      - Accept-Encoding
+      Expires:
+      - Wed, 10 Nov 2021 18:13:36 GMT
+      Cache-Control:
+      - max-age=0, no-cache, no-store
+      Pragma:
+      - no-cache
+      Date:
+      - Wed, 10 Nov 2021 18:13:36 GMT
+      Content-Length:
+      - '1127'
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - ADRUM_BT1=R:0|d:4;Path=/;Expires=Wed, 10-Nov-2021 18:14:06 GMT;Max-Age=30;Secure
+      - ADRUM_BTa=R:0|g:899785bd-fb1d-4a56-8a3d-4d77a979193d;Path=/;Expires=Wed, 10-Nov-2021
+        18:14:06 GMT;Max-Age=30;Secure
+      - ADRUM_BTa=R:0|g:899785bd-fb1d-4a56-8a3d-4d77a979193d|n:customer1_be398b89-8a00-43fd-886f-ad94f836b86e;Path=/;Expires=Wed,
+        10-Nov-2021 18:14:06 GMT;Max-Age=30;Secure
+      - SERVERID=pub19nce_aem65; path=/
+      - SameSite=None;Path=/;Expires=Wed, 10-Nov-2021 18:14:06 GMT;Max-Age=30;Secure
+      - _abck=E127C05F0E9CDACA76B1DEEF9AB6F0F5~-1~YAAQCYcsF8pbFgd9AQAAxiYOCwYSzDpd9DdE4txQHYer2Chr/a0HhNYbsBV++J1dGAQPbOgrflXY6VACDauy/40xV1gQMviV/KsEevtoXTaTrf0uPRuPY/PWc4t+Ih1+BAnA5A6kycr01C0p0vWT0nIAWBslftNupCS/U5BzuQh7d7zSit7S0vbm81pGA1Rqxf/lWsdJ4q6dMLsm9a1JeWrvFS1M4seC9OHFsMTah5U5TPxjpbeWvFitOG4enuw2kYkzwbjkSFrFAwbExLa5MgD3bMxs8glLBkG8e+L+leVj/+yWMCChT0KahwTAV48PuzoZUug3CMqkUi0kxKcDIql8xVmKLVE93UPpEkarm/Xbv6goyGi2979cUV2wcA==~-1~-1~-1;
+        Domain=.spectrum.com; Path=/; Expires=Thu, 10 Nov 2022 18:13:36 GMT; Max-Age=31536000;
+        Secure
+      - ak_bmsc=F886FB0F12FD0F3E938C9AD85F65F5F4~000000000000000000000000000000~YAAQCYcsF8tbFgd9AQAAxiYOCw3L0brmUKr9AZTRJBkmJ14qOI4CHJYX6c7tzCyL71pOiNozBFrSnXI0EhT0Q1F1GkkvCRUXtLLAucc+J7tkbvpo12ts7TSuJJoOOgyIcsis/FD1WXFcQSer35Vhd4wanQeGqq3R+fXWlzJQECI9LYA9ltfm4AmxkHh/n75q4FMy3JgCUbMQ7V+fNElDSR33SlzhVp6ESVZtm9SnUbZAJf7V5JzaeveuKCqttfGUJd+Iq8wElmDy3GxJKfCO9bVe+pDLiIYbr/glXt5mtpdd5ZNgfaEAEChBoyyBGLqgPHcLy92EM05XVceiLN4sx6Uw/n2mk3TXA6xmePfsXuAPf8Cole1eirx/nXV3mw==;
+        Domain=.spectrum.com; Path=/; Expires=Wed, 10 Nov 2021 20:13:36 GMT; Max-Age=7200;
+        HttpOnly
+      - akaas_AB-Testing=2147483647~rv=28~id=79fee28e081bd1ffe8fb3c54ca0432bd; path=/;
+        Secure; SameSite=None
+      - bm_sz=2417309D37EE975BBC6DAF5C81534952~YAAQCYcsF8xbFgd9AQAAxiYOCw1VOWTqmPSloDbbY/V/hz4oQuvn4x8RepXIhH7hIHOxuGX+Nt15jb07mmvbiTj0MVO42DnMJokS3w4Y5u3PqvEoYgaRpsClKNWRrlYEp/BaYn6bNAoDDiSrEyd+SPJ7egj3jVTbuYgEEe2FzEzQtwsg6qlMN3hBl6NCLHCtXEqhW9RGUiKrvoyZ1jI2oaetFh7OeplbfSG7PkjgUO+OS/m05MA0AMxf9QGGhjkx5uHUu0GD0DhbHl0XWl9n+B5dcfZhamKaCwtJLGiIFFpMnbULdQ==~4404545~3752755;
+        Domain=.spectrum.com; Path=/; Expires=Wed, 10 Nov 2021 22:13:36 GMT; Max-Age=14400
+      Server-Timing:
+      - cdn-cache; desc=MISS
+      - edge; dur=22
+      - origin; dur=46
+      Content-Security-Policy:
+      - frame-ancestors 'self' https://*.webapps.rr.com https://*.chartercom.com https://*.ispectrum.com
+        https://*.spectrum.com;
+      X-Akamai-Content-Targeting:
+      - georegion=274;country_code=US;region_code=NY;city=NEWYORK;dma=501;pmsa=5600;msa=5602;areacode=212;county=NEWYORK;fips=36061;lat=40.7500;long=-73.9967;timezone=EST;zip=10001-10014+10016-10041+10043-10045+10055+10060+10065+10069+10075+10080-10081+10087+10090+10095+10101-10126+10128-10133+10138+10150-10179+10185+10199-10200+10203+10211-10213+10242+10249+10256-10261+10265+10268-10282+10285-10286+10292;continent=NA;network=roadrunner;network_type=cable;asnum=12271;throughput=vhigh;bw=5000;client_ip=72.225.200.12;device_os=Linux;brand_name=Firefox;is_wireless=false;internal_corp_traffic=false
+    body:
+      encoding: UTF-8
+      string: '{"zipcode":"10460","city":"Bronx","state":"NY","serviceVendorName":"none","isSPP1":"false","isSPP2":"false","isSPP3":"false","isSPP4":"false","isSPP5":"false","isSPP6":"false","isSPP7":"false","isSPP8":"false","isNPP":"false","isTwcD3":"false","isTwcSTDA":"false","isTwcSTD":"false","isTwcSELA":"false","isTwcSEL":"false","isCharterD3":"false","isCharterD3NCS":"false","isCharterSTDS":"false","isCharterD3STL":"false","isCharterSELS":"false","isBhnSTD":"false","isBhnSEL":"false","isBackToSchool":"false","isBHNMultipleMSO":"false","isCharterMultipleMSO":"false","isTWCMultipleMSO":"false","isServiceableHawaii":"false","isNYCOutOfFootprint":"true","isResi30":"false","isResi60":"false","isResi100":"false","isResi200":"false","isResi400":"false","isResi940":"false","isNewWaveSwitch":"false","isCDELightbandSwitch":"false","isMicrologicSwitch":"false","isLocalTelSwitch":"false","isSpectrumInternetAssist":"false","isMINet":"false","isMontanaOpticom":"false","isSilverStarCommunications":"false","isTCTWest":"false","isTSC":"false","isCPWS":"false","isCitiLinks":"false","isATMC":"false","isVast":"false","isHorizon":"false"}
+
+        '
+  recorded_at: Wed, 10 Nov 2021 18:13:36 GMT
+recorded_with: VCR 6.0.0
