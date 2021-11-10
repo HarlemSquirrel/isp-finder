@@ -152,7 +152,7 @@ module ISPFinder
       req['Cookie'] = "visitor_id=#{self.class.visit_ids_data['visitor_id']}; " \
                       "visit_id=#{self.class.visit_ids_data['visit_id']};"
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      res = Net::HTTP.start(uri.hostname, uri.port, HTTP_OPTIONS) do |http|
         http.request(req)
       end
       return res if res.is_a?(Net::HTTPSuccess)

@@ -2,6 +2,13 @@ require_relative 'storage'
 
 module ISPFinder
   module ISPBase
+    HTTP_OPTIONS = {
+      open_timeout: 3,
+      read_timeout: 10,
+      write_timeout: 5,
+      use_ssl: true
+    }.freeze
+
     attr_reader :city, :state, :street, :zip
 
     def initialize(street:, city:, state:, zip:)

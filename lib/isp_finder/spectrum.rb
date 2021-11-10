@@ -34,14 +34,7 @@ module ISPFinder
       req['Accept'] = 'application/json'
       req['User-Agent']= 'Mozilla/5.0 (X11; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0'
 
-      opt = {
-        open_timeout: 3,
-        read_timeout: 5,
-        write_timeout: 5,
-        use_ssl: true
-      }
-
-      res = Net::HTTP.start(uri.hostname, uri.port, **opt) do |http|
+      res = Net::HTTP.start(uri.hostname, uri.port, HTTP_OPTIONS) do |http|
         http.request(req)
       end
 

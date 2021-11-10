@@ -96,14 +96,7 @@ module ISPFinder
 
       req.body = params.to_json
 
-      opt = {
-        open_timeout: 3,
-        read_timeout: 5,
-        write_timeout: 5,
-        use_ssl: true
-      }
-
-      res = Net::HTTP.start(uri.hostname, uri.port, **opt) do |http|
+      res = Net::HTTP.start(uri.hostname, uri.port, HTTP_OPTIONS) do |http|
         http.request(req)
       end
 
