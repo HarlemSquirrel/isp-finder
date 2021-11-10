@@ -13,6 +13,7 @@ require_relative 'isp_finder/presenter'
 
 require_relative 'isp_finder/frontier'
 require_relative 'isp_finder/optimum'
+require_relative 'isp_finder/spectrum'
 require_relative 'isp_finder/verizon'
 
 module ISPFinder
@@ -42,6 +43,7 @@ module ISPFinder
       puts "\n#{street}, #{city}, #{state} #{zip}",
            *frontier.printable,
            *optimum.printable,
+           *spectrum.printable,
            *verizon.printable
     end
 
@@ -57,6 +59,10 @@ module ISPFinder
 
     def optimum
       @optimum ||= Optimum.new(**address_params)
+    end
+
+    def spectrum
+      @spectrum ||= Spectrum.new(**address_params)
     end
 
     def verizon
