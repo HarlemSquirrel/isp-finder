@@ -14,8 +14,8 @@ module ISPFinder
     def initialize(street:, city:, state:, zip:)
       @street = street
       @city = city
-      @state = state
-      @zip = zip.to_s
+      @state = state.strip.upcase
+      @zip = zip.to_s.strip
     end
 
     def brand
