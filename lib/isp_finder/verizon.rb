@@ -12,7 +12,7 @@ module ISPFinder
     VISIT_IDS_URL = 'https://www.verizon.com/inhome/generatevisitid'
 
     def fios_qualified?
-      fios_data.dig('qualified') == 'Y'
+      fios_data&.dig('qualified') == 'Y'
     end
 
     def fios_ready?
@@ -24,12 +24,14 @@ module ISPFinder
     end
 
     def printable
-      return presenter.printable(["Address not found"]) if address_from_typeahead.nil?
+      return presenter.printable(["Address lookup failed"]) if address_from_typeahead.nil?
+
+      return presenter.printable(["Address not found"]) if qualification_data.dig('data', 'addressNotFound')
 
       presenter.printable [
         # qualification_data.dig('meta', 'timestamp'),
         "Qualified? #{qualification_data.dig('data', 'qualified')}",
-        "FiOS? #{fios_data.dig('qualified')}",
+        "FiOS? #{fios_data&.dig('qualified')}",
         "FiOS Ready? #{qualification_data.dig('data', 'fiosReady')}",
         "FiOS self install? #{qualification_data.dig('data', 'fiosSelfInstall')}"
       ]
@@ -37,7 +39,7 @@ module ISPFinder
 
     def fios_data
       qualification_data.dig('data', 'services')
-                        .find { |service| service['servicename'] == 'FiOSData' }
+                        &.find { |service| service['servicename'] == 'FiOSData' }
 
     end
 
