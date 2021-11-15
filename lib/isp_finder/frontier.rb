@@ -150,32 +150,31 @@ module ISPFinder
     end
 
     def print_fiber_availability
-      puts "  Frontier serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
-           "  Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
-           "  Fiber: #{availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber')}",
-           availability_data.dig('data', 'runServiceability', 'products')
-             .map { |prod| "   $#{prod.dig('pricing', 'amount')} #{prod['name']} " \
-                           "#{prod.dig('attributes', 'downloadSpeed')}M down / " \
-                           "#{prod.dig('attributes', 'uploadSpeed')}M up " \
-                           "Fiber? #{prod.dig('isFib') || 'no'}" }
+      puts printable
     end
 
     def printable
       presenter.printable [
         "Serviceable? #{availability_data.dig('data', 'runServiceability', 'serviceable')}",
         "Existing service at address? #{availability_data.dig('data', 'runServiceability', 'existingServiceAtAddress')}",
-        "Fiber prediction: #{fiber_confidence}",
+        "Fiber prediction: #{fiber_prediction}",
         *availability_data.dig('data', 'runServiceability', 'products')
                           .to_a
                           .map { |prod| "$#{prod.dig('pricing', 'amount')} #{prod['name']} " \
-                                        "#{prod.dig('attributes', 'downloadSpeed')}M down / " \
-                                        "#{prod.dig('attributes', 'uploadSpeed')}M up " \
-                                        "Fiber? #{prod.dig('isFib') || 'no'}" }
+                                        "#{prod.dig('attributes', 'downloadSpeed')}M ↓ / " \
+                                        "#{prod.dig('attributes', 'uploadSpeed')}M ↑ " \
+                                        "(Fiber? #{prod.dig('isFib') || (prod['name'].match?(/fiber/i) && 'yes') || 'no'})" }
       ]
     end
 
     def fiber_confidence
-      availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber') || 0
+      fiber_prediction +
+        (availability_data.dig('data', 'runServiceability', 'products')
+          .count { |prod| prod.dig('isFib') || prod['name'].match?(/fiber/i) } * 0.5)
+    end
+
+    def fiber_prediction
+      (availability_data.dig('data', 'runServiceability', 'serviceablePrediction', 'fiber') || 0)
     end
 
     private
