@@ -24,6 +24,8 @@ module ISPFinder
     def printable
       return presenter.printable(["Error"]) if bundles_data.nil? && @buyflow_error
 
+      return presenter.printable([bundles_data]) if bundles_data.is_a?(String)
+
       presenter.printable(
         bundles_data['internetOnlyOffers'].to_a.map do |offer|
           "#{offer['name']} $#{offer['price']}#{offer['priceTerm']} #{offer['internetSpeed']}"
@@ -47,9 +49,13 @@ module ISPFinder
       @@lock = true
       data = Storage.fetch(
         "#{storage_key_base}.bundles_data",
-        Proc.new { localize_response && JSON.parse(response(URI(URLS[:bundles])).body) }
+        Proc.new { check_service }
       )
       @@lock = false
+
+      if data == 'No Service'
+        return @bundles_data = 'No Service'
+      end
 
       if data == { "redirectUrl" => "/Buyflow/Error" }
         Storage.delete("#{storage_key_base}.bundles_data")
@@ -69,6 +75,12 @@ module ISPFinder
     private
 
     attr_reader :cookies
+
+    def check_service
+      return 'No Service' if localize_response['redirectUrl'] == 'NoService'
+
+      JSON.parse(response(URI(URLS[:bundles])).body)
+    end
 
     def localize_response
       @localize_response ||= JSON.parse(post_response(URI(URLS[:localize]), {
