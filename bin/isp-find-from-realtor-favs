@@ -16,11 +16,12 @@ ISPFinder::Finder.init_keys
 puts "Getting availability of services for Realtor.com favorites...\n\n"
 
 Sync do
-  ISPFinder::RealtorDotCom.new.saved_properties.each do |property|
-    # Limit concurrency to 32 concurrent so we don't overwhelm IO and result in timeouts
-    semaphore = Async::Semaphore.new(8)
+  # Limit concurrency so we don't overwhelm IO and result in timeouts
+  semaphore = Async::Semaphore.new(4)
 
-    semaphore.async do |subtask|
+  ISPFinder::RealtorDotCom.new.saved_properties.each do |property|
+
+    semaphore.async do |task|
       address = {
         street: property.dig('home', 'location', 'address', 'line'),
         city: property.dig('home', 'location', 'address', 'city'),
@@ -29,7 +30,7 @@ Sync do
       }
       finder = ISPFinder::Finder.new(**address)
 
-      subtask.with_timeout(60) do
+      task.with_timeout(60) do
         finder.print_findings
       end
 
