@@ -6,6 +6,7 @@ require 'logger'
 require 'net/http'
 require 'securerandom'
 
+require 'async'
 require 'nokogiri'
 require 'rainbow'
 
@@ -41,12 +42,18 @@ module ISPFinder
     end
 
     def print_findings
-      puts "\n#{street}, #{city}, #{state} #{zip}",
-           *att.printable,
-           *frontier.printable,
-           *optimum.printable,
-           *spectrum.printable,
-           *verizon.printable
+      sections = []
+
+      task = Async do
+        sections[0] = att.printable
+        sections[1] = frontier.printable
+        sections[2] = optimum.printable
+        sections[3] = spectrum.printable
+        sections[4] = verizon.printable
+      end
+
+      task.wait
+      puts "\n#{street}, #{city}, #{state} #{zip}", *sections.flatten
     end
 
     private

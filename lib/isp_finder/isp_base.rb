@@ -3,9 +3,9 @@ require_relative 'storage'
 module ISPFinder
   module ISPBase
     HTTP_OPTIONS = {
-      open_timeout: 3,
+      open_timeout: 10,
       read_timeout: 10,
-      write_timeout: 5,
+      write_timeout: 10,
       use_ssl: true
     }.freeze
 
