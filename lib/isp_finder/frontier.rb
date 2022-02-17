@@ -165,15 +165,16 @@ module ISPFinder
                                         "#{prod.dig('attributes', 'uploadSpeed')}M ↑ " \
                                         "(Fiber? #{prod.dig('isFib') || (prod['name'].match?(/fiber/i) && 'yes') || 'no'})" }
       ]
-    rescue Net::ReadTimeout
+    rescue Net::OpenTimeout, Net::ReadTimeout
       presenter.printable(['Timed out'])
     end
 
     def fiber_confidence
       fiber_prediction +
         (availability_data.dig('data', 'runServiceability', 'products')
+          .to_a
           .count { |prod| prod.dig('isFib') || prod['name'].match?(/fiber/i) } * 0.5)
-    rescue Net::ReadTimeout
+    rescue Net::OpenTimeout, Net::ReadTimeout
       0
     end
 
